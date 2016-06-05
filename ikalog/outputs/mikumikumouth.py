@@ -32,6 +32,7 @@ from ikalog.constants import *
 from ikalog.utils import *
 from .commentator import Commentator
 
+
 class MikuMikuMouthServer(object):
     ''' みくみくまうすにコマンドを送信するサーバーです
     http://mikumikumouth.net/
@@ -84,11 +85,12 @@ class MikuMikuMouth(Commentator):
     '''
     みくみくまうすサーバー
     '''
-    def __init__(self, host='127.0.0.1', port=50082, dictionary={}):
+    def __init__(self, host='127.0.0.1', port=50082, dictionary={}, ver=2.0):
         super(MikuMikuMouth, self).__init__(dictionary)
         self._server = MikuMikuMouthServer(host, port)
         self._server.listen()
-        self._read_event('initialize');
+        self._ver = ver
+        self._read_event('initialize')
 
     def config_key(self):
         return 'mikumikumouth'
@@ -107,6 +109,9 @@ class MikuMikuMouth(Commentator):
             return
 
         message["tag"] = "white"
+        if self._ver >= 2.1:
+            message = {'meta': {'type': 'speechText'}, 'data': message}
+
         self._server.talk(message)
 
     def on_stop(self, context):
